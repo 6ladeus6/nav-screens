@@ -1,24 +1,26 @@
-import { StyleSheet, Text, View,Button } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Contacts from './screens/Contacts';
-import Loguin from './screens/loguin';
+//import Loguin from './screens/loguin';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {MaterialIcons } from '@expo/vector-icons'
+import { useState } from 'react';
 
 //crear constante para generar las rutas de las pantallas(screens)
 
-let user = [
+let users = [
   {
-    username: 'hruiz',name: 'Humberto Ruiz',password: '11', role: 1
+    email: 'hruiz@gmail.com',name: 'Humberto Ruiz',password: '11', role: 1
   },
   {
-    username: 'jdoe',name: 'Jhon Doe',password: '22', role: 2
+    email: 'jdoe@gmail.com',name: 'Jhon Doe',password: '22', role: 2
   }
 ]
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
 export default function App() {
   return (
     <NavigationContainer>
@@ -30,10 +32,47 @@ export default function App() {
   );
 }
 function HomeScreen({navigation}){
+  const [email,setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errormess,seterrormess] = useState('')
   return(
     <View style={styles.container}>
       <Text style={{marginBottom:20}}>Inicio de sesión</Text>
-      
+      <TextInput
+      style={{marginBottom:10}}
+        label="Correo electronico"
+        mode='outlined'
+        left={<TextInput.Icon icon = "account"/>}
+        onChangeText={email => setEmail(email)}
+        value={email}
+      />
+      <TextInput
+      style={{marginBottom:10}}
+        label="Contraseña"
+        mode='outlined'
+        left={<TextInput.Icon icon = "eye"/>}
+        onChangeText={password => setPassword(password)}
+        value={password}
+      />
+      <Button
+        icon = "login"
+        mode = "contained"
+        onPress={() =>{
+          let findUser = users.find(usr => usr.email == email && usr.password == password)
+          if(findUser != undefined){
+              seterrormess('')
+              const {name,email} = findUser
+              setEmail('')
+              setPassword('')
+              navigation.navigate('Contacts',{name:name,email:email})
+          }
+          else{
+              seterrormess('Correo y/o contraseña incorrecto(S)')
+          }
+        }}
+        
+        >Iniciar Session</Button>
+        <Text style={{color:'red'}}>{errormess}</Text>
 
     </View>
   );
